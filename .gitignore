@@ -1,0 +1,75 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+test_results/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# PyCharm project files
+.idea/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PySpark specific
+spark-warehouse/
+metastore_db/
+.derby/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Temporary files and folders
+tmp/
+temp/
+*.tmp
+*.temp
+
+
+# Ignore zip files
+*.zip
+
