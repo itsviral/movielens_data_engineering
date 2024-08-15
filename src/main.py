@@ -1,7 +1,6 @@
 import logging
 import os
 from pyspark.sql import SparkSession
-from pyspark import SparkConf, SparkContext
 from pyspark.sql.functions import col
 from data_loader import DataLoader
 from data_quality import DataQualityChecker, DataCleaner
@@ -29,6 +28,8 @@ def main():
     output_dir = os.path.join(base_dir, '../output')
 
     # Load data
+    # -----------------------------------------------------------------------------
+    # Q1 : Read in movies.dat and ratings.dat to spark dataframes.
     logging.info("Loading data...")
     movies_loader = DataLoader(os.path.join(data_dir, 'movies.dat'), movies_schema)
     ratings_loader = DataLoader(os.path.join(data_dir, 'ratings.dat'), ratings_schema)
@@ -63,34 +64,33 @@ def main():
     users_df = users_cleaner.clean_data()
 
     # Calculate movie rating statistics
+    # -----------------------------------------------------------------------------------------------
+    #  Q2 : Creates a new dataframe, which contains the movies data and 3 new columns max, min and
+    #       average rating for that movie from the ratings data.
     logging.info("Calculating movie rating statistics...")
     movie_stats_calculator = MovieStatisticsCalculator(ratings_df, movies_df)
     movies_with_stats_df = movie_stats_calculator.calculate_statistics()
-
-    # Get top 3 movies per user
-    logging.info("Identifying top 3 movies per user...")
-    top_movies = TopMoviesPerUser(ratings_df, movies_df)
-    top_3_movies_with_titles_df = top_movies.get_top_3_movies()
-
-    # Perform demographic analysis
-    logging.info("Performing demographic analysis...")
-    demographic_analyzer = DemographicAnalyzer(users_df)
-    age_distribution, gender_distribution, occupation_distribution = demographic_analyzer.analyze_demographics()
-
-    # Analyze preferences and average ratings
-    logging.info("Analyzing preferences and average ratings...")
-    ratings_with_users_df = ratings_df.join(users_df, "UserID")
-    analyzer = Analyzer(ratings_with_users_df, movies_df)
-    top_movies_by_age_df, top_movies_by_gender_df, top_movies_by_occupation_df = analyzer.analyze_preferences()
-    avg_rating_by_age_df, avg_rating_by_gender_df, avg_rating_by_occupation_df = analyzer.analyze_average_ratings()
-
     # Display results (only top 10 records for brevity)
     logging.info("Sample of Movies DataFrame with Rating Statistics:")
     movies_with_stats_df.show(10)
 
-    logging.info("Sample of Top 3 Movies per User DataFrame:")
+    # Get top 3 movies per user
+    #-----------------------------------------------------------------------------------------------
+    # Q3 : Create a new dataframe which contains each user’s (userId in the ratings data) top 3 movies
+    #      based on their rating.
+    logging.info("Identifying top 3 movies per user...")
+    top_movies = TopMoviesPerUser(ratings_df, movies_df)
+    top_3_movies_with_titles_df = top_movies.get_top_3_movies()
+    logging.info("Top 3 Movies per User DataFrame:")
     top_3_movies_with_titles_df.show(10)
 
+
+    # Additional Data analysis to understand on user data
+    #-------------------------------------------------------------------------------------------
+    # Perform demographic analysis
+    logging.info("Performing demographic analysis...")
+    demographic_analyzer = DemographicAnalyzer(users_df)
+    age_distribution, gender_distribution, occupation_distribution = demographic_analyzer.analyze_demographics()
     logging.info("Age Group Distribution:")
     age_distribution.show()
 
@@ -99,6 +99,13 @@ def main():
 
     logging.info("Occupation Distribution:")
     occupation_distribution.show()
+
+    # Analyze preferences and average ratings
+    logging.info("Analyzing preferences and average ratings...")
+    ratings_with_users_df = ratings_df.join(users_df, "UserID")
+    analyzer = Analyzer(ratings_with_users_df, movies_df)
+    top_movies_by_age_df, top_movies_by_gender_df, top_movies_by_occupation_df = analyzer.analyze_preferences()
+    avg_rating_by_age_df, avg_rating_by_gender_df, avg_rating_by_occupation_df = analyzer.analyze_average_ratings()
 
     logging.info("Sample of Top Rated Movies by Age Group:")
     top_movies_by_age_df.show(10)
@@ -118,6 +125,8 @@ def main():
     logging.info("Sample of Average Rating by Occupation:")
     avg_rating_by_occupation_df.show()
 
+    #-----------------------------------------------------------------------------------------------
+    # Q4 : Write out the original and new dataframes in an efficient format of your choice.
     # Repartition DataFrames to 1 partition and save them to disk
     logging.info("Saving dataframes to disk with a single partition...")
     movies_df.repartition(1).write.parquet(os.path.join(output_dir, 'movies.parquet'), mode="overwrite")
