@@ -1,6 +1,7 @@
 import logging
 import os
 from pyspark.sql import SparkSession
+from pyspark import SparkConf, SparkContext
 from pyspark.sql.functions import col
 from data_loader import DataLoader
 from data_quality import DataQualityChecker, DataCleaner
@@ -12,7 +13,8 @@ def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     # Create a Spark session
-    spark = SparkSession.builder.appName("MovieLensAnalysis").getOrCreate()
+    spark = SparkSession.builder.appName("MovieLensDataEngineering").getOrCreate()
+    spark.sparkContext.setLogLevel("INFO")
 
     # Define schemas
     movies_schema = "MovieID INT, Title STRING, Genres STRING"
