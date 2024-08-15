@@ -1,0 +1,216 @@
+(dev) movielens_data_engineering % sh spark_submit.sh
+2024-08-15 03:18:00,381 - INFO - Loading data...
+2024-08-15 03:18:00,381 - INFO - Loading data from /movielends_de/movielens_data_engineering/src/../data/movies.dat...
+2024-08-15 03:18:04,534 - INFO - Data loaded successfully with 3883 rows and 3 columns.
+2024-08-15 03:18:04,534 - INFO - Loading data from /movielends_de/movielens_data_engineering/src/../data/ratings.dat...
+2024-08-15 03:18:06,277 - INFO - Data loaded successfully with 1000209 rows and 4 columns.
+2024-08-15 03:18:06,277 - INFO - Loading data from /movielends_de/movielens_data_engineering/src/../data/users.dat...
+2024-08-15 03:18:06,550 - INFO - Data loaded successfully with 6040 rows and 5 columns.
+2024-08-15 03:18:06,551 - INFO - Performing data quality checks...
+2024-08-15 03:18:06,551 - INFO - Performing data quality checks on Movies DataFrame...
+2024-08-15 03:18:08,757 - INFO - Missing values in Movies DataFrame: {'MovieID': 0, 'Title': 0, 'Genres': 0}
+2024-08-15 03:18:08,758 - INFO - Duplicate entries in Movies DataFrame: 0
+2024-08-15 03:18:08,758 - INFO - Performing data quality checks on Ratings DataFrame...
+2024-08-15 03:18:16,499 - INFO - Missing values in Ratings DataFrame: {'UserID': 0, 'MovieID': 0, 'Rating': 0, 'Timestamp': 0}
+2024-08-15 03:18:16,499 - INFO - Duplicate entries in Ratings DataFrame: 0
+2024-08-15 03:18:16,499 - INFO - Performing data quality checks on Users DataFrame...
+2024-08-15 03:18:17,931 - INFO - Missing values in Users DataFrame: {'UserID': 0, 'Gender': 0, 'Age': 0, 'Occupation': 0, 'ZipCode': 0}
+2024-08-15 03:18:17,931 - INFO - Duplicate entries in Users DataFrame: 0
+2024-08-15 03:18:17,931 - INFO - Cleaning data...
+2024-08-15 03:18:21,471 - INFO - Removed invalid rows.
+2024-08-15 03:18:21,559 - INFO - Calculating movie rating statistics...
+2024-08-15 03:18:21,559 - INFO - Calculating movie rating statistics...
+2024-08-15 03:18:21,880 - INFO - Movie rating statistics calculated successfully.
++-------+--------------------+--------------------+---------+---------+------------------+
+|MovieID|               Title|              Genres|MaxRating|MinRating|         AvgRating|
++-------+--------------------+--------------------+---------+---------+------------------+
+|    148|Awfully Big Adven...|               Drama|        5|        1| 2.782608695652174|
+|    463|Guilty as Sin (1993)|Crime|Drama|Thriller|        5|        1|  2.74468085106383|
+|    471|Hudsucker Proxy, ...|      Comedy|Romance|        5|        1| 3.631051752921536|
+|    496|What Happened Was...|Comedy|Drama|Romance|        5|        1|3.2162162162162162|
+|    833|High School High ...|              Comedy|        4|        1|2.1794871794871793|
+|   1088|Dirty Dancing (1987)|     Musical|Romance|        5|        1|3.3114992721979624|
+|   1238|   Local Hero (1983)|              Comedy|        5|        1|               4.0|
+|   1342|     Candyman (1992)|              Horror|        5|        1| 2.904580152671756|
+|   1580| Men in Black (1997)|Action|Adventure|...|        5|        1| 3.739952718676123|
+|   1591|        Spawn (1997)|Action|Adventure|...|        5|        1|2.6210526315789475|
++-------+--------------------+--------------------+---------+---------+------------------+
+only showing top 10 rows
+
+2024-08-15 03:18:28,890 - INFO - Identifying top 3 movies per user...
+2024-08-15 03:18:28,890 - INFO - Identifying top 3 movies per user...
+2024-08-15 03:18:29,096 - INFO - Top 3 movies per user identified successfully.
++------+--------------------+------+
+|UserID|               Title|Rating|
++------+--------------------+------+
+|   148|Indiana Jones and...|     5|
+|   148|Shanghai Noon (2000)|     5|
+|   148| Patriot, The (2000)|     5|
+|   463|Saving Private Ry...|     5|
+|   463|Star Wars: Episod...|     5|
+|   463|His Girl Friday (...|     5|
+|   471|     Magnolia (1999)|     5|
+|   471|  Chicken Run (2000)|     5|
+|   471|      Sanjuro (1962)|     5|
+|   496|South Park: Bigge...|     5|
++------+--------------------+------+
+only showing top 10 rows
+
+2024-08-15 03:18:36,744 - INFO - Performing demographic analysis...
+2024-08-15 03:18:36,745 - INFO - Analyzing user demographics...
+2024-08-15 03:18:36,853 - INFO - User demographics analyzed successfully.
+2024-08-15 03:18:36,854 - INFO - Age Group Distribution:
++---+-----+
+|Age|count|
++---+-----+
+|  1|  222|
+| 18| 1103|
+| 25| 2096|
+| 35| 1193|
+| 45|  550|
+| 50|  496|
+| 56|  380|
++---+-----+
+
+2024-08-15 03:18:37,321 - INFO - Gender Distribution:
++------+-----+
+|Gender|count|
++------+-----+
+|     F| 1709|
+|     M| 4331|
++------+-----+
+
+2024-08-15 03:18:40,601 - INFO - Occupation Distribution:
++----------+-----+
+|Occupation|count|
++----------+-----+
+|         0|  711|
+|         1|  528|
+|         2|  267|
+|         3|  173|
+|         4|  759|
+|         5|  112|
+|         6|  236|
+|         7|  679|
+|         8|   17|
+|         9|   92|
+|        10|  195|
+|        11|  129|
+|        12|  388|
+|        13|  142|
+|        14|  302|
+|        15|  144|
+|        16|  241|
+|        17|  502|
+|        18|   70|
+|        19|   72|
++----------+-----+
+only showing top 20 rows
+
+2024-08-15 03:18:41,374 - INFO - Analyzing preferences and average ratings...
+2024-08-15 03:18:41,386 - INFO - Analyzing movie preferences by demographics...
+2024-08-15 03:18:41,739 - INFO - Movie preferences by demographics analyzed successfully.
+2024-08-15 03:18:41,739 - INFO - Analyzing average ratings by demographic groups...
+2024-08-15 03:18:41,954 - INFO - Average ratings by demographic groups analyzed successfully.
+2024-08-15 03:18:41,954 - INFO - Sample of Top Rated Movies by Age Group:
++-------+---+---------+--------------------+------------------+
+|MovieID|Age|AvgRating|               Title|            Genres|
++-------+---+---------+--------------------+------------------+
+|   3724|  1|      5.0|  Coming Home (1978)|         Drama|War|
+|    117|  1|      5.0|Young Poisoner's ...|             Crime|
+|   1827|  1|      5.0| Big One, The (1997)|Comedy|Documentary|
+|    549|  1|      5.0|Thirty-Two Short ...|       Documentary|
+|   1900|  1|      5.0|Children of Heave...|             Drama|
+|   1361|  1|      5.0|Paradise Lost: Th...|       Documentary|
+|    897|  1|      5.0|For Whom the Bell...|     Adventure|War|
+|   2677|  1|      5.0|Buena Vista Socia...|       Documentary|
+|   2166|  1|      5.0|Return to Paradis...|     Drama|Romance|
+|     57|  1|      5.0|Home for the Holi...|             Drama|
++-------+---+---------+--------------------+------------------+
+only showing top 10 rows
+
+2024-08-15 03:18:46,891 - INFO - Sample of Top Rated Movies by Gender:
++-------+------+---------+--------------------+-------------+
+|MovieID|Gender|AvgRating|               Title|       Genres|
++-------+------+---------+--------------------+-------------+
+|   3292|     F|      5.0|Big Combo, The (1...|    Film-Noir|
+|   2538|     F|      5.0|   Dancemaker (1998)|  Documentary|
+|    687|     F|      5.0| Country Life (1994)|Drama|Romance|
+|   1450|     F|      5.0|Prisoner of the M...|          War|
+|   1780|     F|      5.0|Ayn Rand: A Sense...|  Documentary|
+|   3817|     F|      5.0|Other Side of Sun...| Comedy|Drama|
+|    394|     F|      5.0|  Coldblooded (1995)|       Action|
+|   3245|     F|      5.0|I Am Cuba (Soy Cu...|        Drama|
+|    787|     F|      5.0|Gate of Heavenly ...|  Documentary|
+|   3881|     F|      5.0|Bittersweet Motel...|  Documentary|
++-------+------+---------+--------------------+-------------+
+only showing top 10 rows
+
+2024-08-15 03:18:49,748 - INFO - Sample of Top Rated Movies by Occupation:
++-------+----------+---------+--------------------+--------------+
+|MovieID|Occupation|AvgRating|               Title|        Genres|
++-------+----------+---------+--------------------+--------------+
+|   1879|         0|      5.0|Hanging Garden, T...|         Drama|
+|    649|         0|      5.0|Cold Fever (� k�l...|  Comedy|Drama|
+|   3570|         0|      5.0|Last September, T...|         Drama|
+|    687|         0|      5.0| Country Life (1994)| Drama|Romance|
+|   2061|         0|      5.0|Full Tilt Boogie ...|   Documentary|
+|    570|         0|      5.0|Slingshot, The (K...|  Comedy|Drama|
+|   1164|         0|      5.0|Two or Three Thin...|         Drama|
+|   2839|         0|      5.0|West Beirut (West...|         Drama|
+|    981|         0|      5.0|Dangerous Ground ...|         Drama|
+|   2962|         0|      5.0|  Fever Pitch (1997)|Comedy|Romance|
++-------+----------+---------+--------------------+--------------+
+only showing top 10 rows
+
+2024-08-15 03:18:52,692 - INFO - Sample of Average Rating by Age Group:
++---+------------------+
+|Age|         AvgRating|
++---+------------------+
+|  1| 3.549520414538238|
+| 18|3.5075734460814227|
+| 25|3.5452350615336385|
+| 35|3.6181615352532375|
+| 45| 3.638061530735475|
+| 50| 3.714512346530556|
+| 56| 3.766632284682826|
++---+------------------+
+
+2024-08-15 03:18:53,499 - INFO - Sample of Average Rating by Gender:
++------+------------------+
+|Gender|         AvgRating|
++------+------------------+
+|     F|3.6203660120110372|
+|     M|3.5688785290984373|
++------+------------------+
+
+2024-08-15 03:18:55,806 - INFO - Sample of Average Rating by Occupation:
++----------+------------------+
+|Occupation|         AvgRating|
++----------+------------------+
+|         0|3.5375443489988427|
+|         1| 3.576642335766423|
+|         2| 3.573080610369897|
+|         3|3.6565158270878793|
+|         4| 3.536792539227059|
+|         5| 3.537528604118993|
+|         6| 3.661577744926757|
+|         7|3.5997723500118566|
+|         8| 3.466740576496674|
+|         9|3.6565888056412517|
+|        10| 3.532674967797338|
+|        11|3.6173710061761417|
+|        12| 3.654000769042542|
+|        13|3.7817362221899082|
+|        14| 3.618481337433057|
+|        15| 3.689773866062481|
+|        16| 3.596575476412942|
+|        17| 3.613573939793452|
+|        18| 3.530117491312262|
+|        19| 3.414049919484702|
++----------+------------------+
+only showing top 20 rows
+
+2024-08-15 03:18:56,707 - INFO - Saving dataframes to disk with a single partition...
+2024-08-15 03:19:03,629 - INFO - All dataframes saved successfully in Parquet format with a single partition.
+2024-08-15 03:19:03,632 - INFO - Closing down clientserver connection
