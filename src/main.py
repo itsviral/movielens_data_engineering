@@ -1,29 +1,43 @@
 import logging
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 from data_loader import DataLoader
 from data_quality import DataQualityChecker, DataCleaner
 from movie_analysis import MovieStatisticsCalculator, TopMoviesPerUser, Analyzer
 from demographic_analysis import DemographicAnalyzer
-from pyspark.sql.functions import col
 
 def main():
     # Setup logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # Create a Spark session
+    spark = SparkSession.builder.appName("MovieLensAnalysis").getOrCreate()
 
     # Define schemas
     movies_schema = "MovieID INT, Title STRING, Genres STRING"
     ratings_schema = "UserID INT, MovieID INT, Rating INT, Timestamp LONG"
     users_schema = "UserID INT, Gender STRING, Age INT, Occupation INT, ZipCode STRING"
 
+    # Get the directory of the current script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct absolute paths dynamically
+    data_dir = os.path.join(base_dir, '../data')
+    output_dir = os.path.join(base_dir, '../output')
+
     # Load data
-    movies_loader = DataLoader('../data/movies.dat', movies_schema)
-    ratings_loader = DataLoader('../data/ratings.dat', ratings_schema)
-    users_loader = DataLoader('../data/users.dat', users_schema)
+    logging.info("Loading data...")
+    movies_loader = DataLoader(os.path.join(data_dir, 'movies.dat'), movies_schema)
+    ratings_loader = DataLoader(os.path.join(data_dir, 'ratings.dat'), ratings_schema)
+    users_loader = DataLoader(os.path.join(data_dir, 'users.dat'), users_schema)
 
     movies_df = movies_loader.load_data()
     ratings_df = ratings_loader.load_data()
     users_df = users_loader.load_data()
 
     # Perform data quality checks
+    logging.info("Performing data quality checks...")
     movies_quality_checker = DataQualityChecker(movies_df, "Movies DataFrame")
     ratings_quality_checker = DataQualityChecker(ratings_df, "Ratings DataFrame")
     users_quality_checker = DataQualityChecker(users_df, "Users DataFrame")
@@ -33,7 +47,12 @@ def main():
     users_quality_checker.perform_checks()
 
     # Clean data
-    ratings_cleaner = DataCleaner(ratings_df, ratings_df.count() - ratings_df.dropDuplicates().count(), invalid_condition=(col("Rating") < 1) | (col("Rating") > 5))
+    logging.info("Cleaning data...")
+    ratings_cleaner = DataCleaner(
+        ratings_df,
+        ratings_df.count() - ratings_df.dropDuplicates().count(),
+        invalid_condition=(col("Rating") < 1) | (col("Rating") > 5)
+    )
     movies_cleaner = DataCleaner(movies_df, movies_df.count() - movies_df.dropDuplicates().count())
     users_cleaner = DataCleaner(users_df, users_df.count() - users_df.dropDuplicates().count())
 
@@ -42,18 +61,22 @@ def main():
     users_df = users_cleaner.clean_data()
 
     # Calculate movie rating statistics
+    logging.info("Calculating movie rating statistics...")
     movie_stats_calculator = MovieStatisticsCalculator(ratings_df, movies_df)
     movies_with_stats_df = movie_stats_calculator.calculate_statistics()
 
     # Get top 3 movies per user
+    logging.info("Identifying top 3 movies per user...")
     top_movies = TopMoviesPerUser(ratings_df, movies_df)
     top_3_movies_with_titles_df = top_movies.get_top_3_movies()
 
     # Perform demographic analysis
+    logging.info("Performing demographic analysis...")
     demographic_analyzer = DemographicAnalyzer(users_df)
     age_distribution, gender_distribution, occupation_distribution = demographic_analyzer.analyze_demographics()
 
     # Analyze preferences and average ratings
+    logging.info("Analyzing preferences and average ratings...")
     ratings_with_users_df = ratings_df.join(users_df, "UserID")
     analyzer = Analyzer(ratings_with_users_df, movies_df)
     top_movies_by_age_df, top_movies_by_gender_df, top_movies_by_occupation_df = analyzer.analyze_preferences()
@@ -92,6 +115,16 @@ def main():
 
     logging.info("Sample of Average Rating by Occupation:")
     avg_rating_by_occupation_df.show()
+
+    # Repartition DataFrames to 1 partition and save them to disk
+    logging.info("Saving dataframes to disk with a single partition...")
+    movies_df.repartition(1).write.parquet(os.path.join(output_dir, 'movies.parquet'), mode="overwrite")
+    ratings_df.repartition(1).write.parquet(os.path.join(output_dir, 'ratings.parquet'), mode="overwrite")
+    users_df.repartition(1).write.parquet(os.path.join(output_dir, 'users.parquet'), mode="overwrite")
+    movies_with_stats_df.repartition(1).write.parquet(os.path.join(output_dir, 'movies_with_stats.parquet'), mode="overwrite")
+    top_3_movies_with_titles_df.repartition(1).write.parquet(os.path.join(output_dir, 'top_3_movies_per_user.parquet'), mode="overwrite")
+
+    logging.info("All dataframes saved successfully in Parquet format with a single partition.")
 
 if __name__ == "__main__":
     main()
