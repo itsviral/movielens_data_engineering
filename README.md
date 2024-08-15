@@ -1,9 +1,9 @@
 ```markdown
-#MovieLens Data Engineering Project
+# MovieLens Data Engineering Project
 
 This project processes the MovieLens dataset using Apache Spark. It reads in movies and ratings data, calculates rating statistics, identifies top movies per user, and performs demographic analysis. The results are stored in Parquet format.
 
-Project Structure
+## Project Structure
 
 ```
 movielens_data_engineering/
