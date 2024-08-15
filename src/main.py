@@ -71,7 +71,6 @@ def main():
     movie_stats_calculator = MovieStatisticsCalculator(ratings_df, movies_df)
     movies_with_stats_df = movie_stats_calculator.calculate_statistics()
     # Display results (only top 10 records for brevity)
-    logging.info("Sample of Movies DataFrame with Rating Statistics:")
     movies_with_stats_df.show(10)
 
     # Get top 3 movies per user
@@ -81,7 +80,6 @@ def main():
     logging.info("Identifying top 3 movies per user...")
     top_movies = TopMoviesPerUser(ratings_df, movies_df)
     top_3_movies_with_titles_df = top_movies.get_top_3_movies()
-    logging.info("Top 3 Movies per User DataFrame:")
     top_3_movies_with_titles_df.show(10)
 
 
