@@ -47,7 +47,7 @@ movielens_data_engineering/
 
 ## Setup Instructions
 
-1. **Clone the Repository:**
+1. Clone the Repository:
 
    ```bash
    git clone https://github.com/itsviral/movielens_data_engineering.git
