@@ -41,9 +41,9 @@ movielens_data_engineering/
 
 ## Prerequisites
 
-- **Python**: Ensure Python 3.7+ is installed.
-- **Apache Spark**: Ensure Apache Spark 2.4+ is installed.
-- **Java**: Ensure Java 8 or higher is installed.
+- Python: Ensure Python 3.7+ is installed.
+- Apache Spark**: Ensure Apache Spark 2.4+ is installed.
+- Java: Ensure Java 8 or higher is installed.
 
 ## Setup Instructions
 
