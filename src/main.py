@@ -1,7 +1,7 @@
 import logging
 import os
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, desc
 from data_loader import DataLoader
 from data_quality import DataQualityChecker, DataCleaner
 from movie_analysis import MovieStatisticsCalculator, TopMoviesPerUser, Analyzer
@@ -13,7 +13,7 @@ def main():
 
     # Create a Spark session
     spark = SparkSession.builder.appName("MovieLensDataEngineering").getOrCreate()
-    spark.sparkContext.setLogLevel("INFO")
+    #spark.sparkContext.setLogLevel("INFO")
 
     # Define schemas
     movies_schema = "MovieID INT, Title STRING, Genres STRING"
@@ -71,7 +71,7 @@ def main():
     movie_stats_calculator = MovieStatisticsCalculator(ratings_df, movies_df)
     movies_with_stats_df = movie_stats_calculator.calculate_statistics()
     # Display results (only top 10 records for brevity)
-    movies_with_stats_df.show(10)
+    movies_with_stats_df.orderBy(desc('AvgRating')).show(10)
 
     # Get top 3 movies per user
     #-----------------------------------------------------------------------------------------------

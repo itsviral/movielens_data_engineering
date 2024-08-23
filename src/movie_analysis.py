@@ -15,6 +15,10 @@ class MovieStatisticsCalculator:
                 spark_min("Rating").alias("MinRating"),
                 avg("Rating").alias("AvgRating")
             )
+            # Count of MovieID which does not exist in Ratings data
+            missing_movies_count = self.movies_df.join(rating_stats_df, "MovieID", "left").filter(col("MaxRating").isNull()).count()
+            logging.info(f"Number of movies with no ratings: {missing_movies_count}")
+            # Backfill missing values with 0 to avoid nulls
             movies_with_stats_df = self.movies_df.join(rating_stats_df, "MovieID", "left").fillna(0)
             movies_with_stats_df.cache()  # Cache the resulting DataFrame
             logging.info("Movie rating statistics calculated successfully.")
